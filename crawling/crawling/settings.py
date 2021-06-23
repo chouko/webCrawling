@@ -62,9 +62,13 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'crawling.pipelines.ImagesPipeline': 3,
-    'crawling.pipelines.DirCreatingPipeline': 2,
+    'crawling.pipelines.DirCreatingPipeline': 1,
+    'crawling.pipelines.MyImagesPipeline': 2,
+    'crawling.pipelines.JsonOutputPipeline': 3,
+    'crawling.pipelines.ResourceOutputPipeline': 4
 }
+
+IMAGES_STORE = '/news'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

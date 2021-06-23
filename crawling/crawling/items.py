@@ -8,8 +8,11 @@ from scrapy.item import Item, Field
 
 class CrawlingItem(Item):
     # define the fields for your item here like:
+    source_url = Field()
     title = Field()
     localtime = Field()
     body = Field()
     images = Field()
+    image_urls = Field()
+    category = Field()
     pass
