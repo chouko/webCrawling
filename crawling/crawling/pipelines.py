@@ -14,7 +14,7 @@ from scrapy.pipelines.images import ImagesPipeline
 from scrapy.exporters import JsonLinesItemExporter
 
 ABS_PATH = dirname(dirname(abspath(__file__))) + '/news/'
-fields_to_export = ['title', 'category']
+fields_to_export = ['title', 'category', 'summary']
 message = """
 <html>
 <head>
@@ -74,11 +74,10 @@ class ResourceOutputPipeline:
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
-        if re.match(r'(.*)aticle_detail2(.*)', adapter['source_url']):
-            fp = open(self.abs_path + adapter['localtime'] + '/resource/' + adapter['title'] + '.html', "w"
-                      , encoding='utf-8')
-            fp.write(message % (adapter['body']))
-            fp.close()
+        fp = open(self.abs_path + adapter['localtime'] + '/resource/' + adapter['title'] + '.html', "w"
+                  , encoding='utf-8')
+        fp.write(message % (adapter['body']))
+        fp.close()
         return item
 
 
