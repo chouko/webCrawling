@@ -74,7 +74,7 @@ class ResourceOutputPipeline:
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
-        fp = open(self.abs_path + adapter['localtime'] + '/resource/' + adapter['title'] + '.html', "w"
+        fp = open(self.abs_path + adapter['localtime'] + '/resource/' + 'page' + '.html', "w"
                   , encoding='utf-8')
         fp.write(message % (adapter['body']))
         fp.close()

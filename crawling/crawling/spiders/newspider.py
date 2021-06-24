@@ -14,35 +14,37 @@ from scrapy.linkextractors import LinkExtractor
 #                  6: "时事新闻"}
 START_URLS = ['https://www.zjgj.ca/action?pageNum=1']
 
-DOMAINS = ['zjgj.ca']
+DOMAIN = 'https://www.zjgj.ca'
+HOST = 'www.zjgj.ca'
 
-DETAIL_PATTERN = "//div[contains(@class,media item)]"
-NEXT_PAGE_XPATH = "//'ul'[contains(@class,'pagingArea')]/li/a[2]/@href"
-FINAL_PAGE_XPATH = "//ul[contains(@class,'pagingArea')]/li/a[3]/@href"
+DETAIL_PATTERN = "//div[contains(@class,'media item')]/a"
+NEXT_PAGE_XPATH = "//ul[contains(@class,'pagingArea')]/li/a[3]/@href"
+FINAL_PAGE_XPATH = "//ul[contains(@class,'pagingArea')]/li/a[4]/@href"
 
 
 class NewsSpider(Spider):
     name = 'crawling'
-    allowed_domains = DOMAINS
+    allowed_domains = [HOST]
 
     start_urls = START_URLS
 
     def parse(self, response):
         selector = Selector(response)
         try:
-            articles = selector.xpath(DETAIL_PATTERN).getall()
-            next_link = selector.xpath(NEXT_PAGE_XPATH)
-            final_link = selector.xpath(FINAL_PAGE_XPATH)
+            articles = selector.xpath(DETAIL_PATTERN)
+            next_link = selector.xpath(NEXT_PAGE_XPATH).get()
+            final_link = selector.xpath(FINAL_PAGE_XPATH).get()
             for article in articles:
-                yield Request(article.xpath("//a/@href"),
-                              callback=self.parse_detail(response, article.xpath("//a/p/text()").get()))
+                yield Request(DOMAIN + article.xpath("@href").get(),
+                              callback=self.parse_detail, cb_kwargs=dict(summary=article.xpath("//p/text()").get()),
+                              errback=self.errback)
 
-            if next_link.split('=')[-1] < final_link.split('=')[-1]:
-                yield Request(next_link)
+            if int(next_link.split('=')[-1]) < int(final_link.split('=')[-1]):
+                yield Request(DOMAIN + next_link, callback=self.parse, errback=self.errback)
         except IndexError:
             pass
 
-    def parse_detail(self, response, summary=None):
+    def parse_detail(self, response, summary):
         item = CrawlingItem()
         selector = Selector(response)
         body = selector.xpath("//div[contains(@class, 'article')]")
@@ -55,3 +57,7 @@ class NewsSpider(Spider):
         item['category'] = 'NEWS'
         item['summary'] = summary
         yield item
+
+    def errback(self, failure):
+        self.logger.error(repr(failure))
+
