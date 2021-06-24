@@ -18,15 +18,7 @@ class CrawlingItem(Item):
     summary = Field()
 
 
-class JsonOutputItem1(Item):
-    resourceList = Field()
-
-
-class JsonOutputItem2(Item):
-    fileRes = Field()
-
-
-class JsonOutputItem3(Item):
+class JsonOutputsSingleItem(Item):
     path = Field()
     title = Field()
     category = Field()

@@ -2,7 +2,6 @@
 
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 import os
-import re
 import time
 import datetime
 from os.path import dirname, abspath
@@ -11,7 +10,9 @@ from urllib.parse import urlparse
 import scrapy
 from itemadapter import ItemAdapter
 from scrapy.pipelines.images import ImagesPipeline
-from scrapy.exporters import JsonLinesItemExporter
+from scrapy.exporters import JsonItemExporter
+
+from items import JsonOutputsSingleItem
 
 ABS_PATH = dirname(dirname(abspath(__file__))) + '/news/'
 fields_to_export = ['title', 'category', 'summary']
@@ -46,26 +47,45 @@ class DirCreatingPipeline:
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
-        if adapter.get('localtime'):
+        if adapter.get('localtime') is not None:
             # 转化成utc时间
             adapter['localtime'] = local2utc(adapter['localtime'])
         else:
-            adapter['localtime'] = adapter['title']
-        mkdir(self.abs_path + adapter['localtime'] + '/resource')
+            adapter['localtime'] = local2utc(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        self.mkdir(self.abs_path + adapter['localtime'] + '/resource')
         return item
+
+    def mkdir(self, path):
+        if not os.path.exists(path):
+            os.makedirs(path)
+        else:
+            os.makedirs(self.abs_path + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '/resource')
 
 
 # json文件导出管道
 class JsonOutputPipeline:
-    abs_path = ABS_PATH
+
+    def __init__(self):
+        self.abs_path = ABS_PATH
+        os.makedirs(self.abs_path) if not os.path.exists(self.abs_path)
+        self.fp = open(self.abs_path + 'res-list.json', "wb")
+        self.exporter = JsonItemExporter(self.fp, encoding='utf-8')
+        self.exporter.start_exporting()
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
-        fp = open(self.abs_path + adapter['localtime'] + '/' + 'dto.json', "wb")
-        exporter = JsonLinesItemExporter(fp, encoding='utf-8', fields_to_export=fields_to_export)
-        exporter.export_item(item)
-        fp.close()
+        new_item = JsonOutputsSingleItem()
+        new_item['path'] = adapter['localtime']
+        new_item['title'] = adapter['title']
+        new_item['category'] = adapter['category']
+        new_item['tag'] = []
+        new_item['summary'] = adapter['summary']
+        self.exporter.export_item(new_item)
         return item
+
+    def close_spider(self, spider):
+        self.exporter.finish_exporting()
+        self.fp.close()
 
 
 # html文件导出管道
@@ -79,11 +99,6 @@ class ResourceOutputPipeline:
         fp.write(message % (adapter['body']))
         fp.close()
         return item
-
-
-def mkdir(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
 
 
 def local2utc(local_st):

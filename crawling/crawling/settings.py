@@ -68,7 +68,7 @@ ITEM_PIPELINES = {
     'crawling.pipelines.ResourceOutputPipeline': 4
 }
 
-IMAGES_STORE = '/news'
+IMAGES_STORE = '/'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
