@@ -16,6 +16,7 @@ class CrawlingItem(Item):
     image_urls = Field()
     category = Field()
     summary = Field()
+    resource_links = Field()
 
 
 class JsonOutputsSingleItem(Item):

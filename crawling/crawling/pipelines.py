@@ -4,18 +4,18 @@
 import os
 import time
 import datetime
-from os.path import dirname, abspath
 from urllib.parse import urlparse
 
 import scrapy
 from itemadapter import ItemAdapter
+from scrapy.pipelines.files import FilesPipeline
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.exporters import JsonItemExporter
 
+from crawling.constant_settings import ABS_PATH,DOMAIN
+
 from items import JsonOutputsSingleItem
 
-ABS_PATH = dirname(dirname(abspath(__file__))) + '/news/'
-fields_to_export = ['title', 'category', 'summary']
 message = """
 <html>
 <head>
@@ -34,11 +34,10 @@ class MyImagesPipeline(ImagesPipeline):
     def get_media_requests(self, item, info):
         adapter = ItemAdapter(item)
         for image_url in adapter['image_urls']:
-            yield scrapy.Request(image_url)
+            yield scrapy.Request(DOMAIN + image_url)
 
     def file_path(self, request, response=None, info=None, *, item=None):
-        adapter = ItemAdapter(item)
-        return self.abs_path + adapter['localtime'] + '/' + os.path.basename(urlparse(request.url).path)
+        return self.abs_path + urlparse(request.url).path
 
 
 # 文件夹创建管道
@@ -59,7 +58,7 @@ class DirCreatingPipeline:
         if not os.path.exists(path):
             os.makedirs(path)
         else:
-            os.makedirs(self.abs_path + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '/resource')
+            os.makedirs(self.abs_path + local2utc(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + '/resource')
 
 
 # json文件导出管道
@@ -67,7 +66,7 @@ class JsonOutputPipeline:
 
     def __init__(self):
         self.abs_path = ABS_PATH
-        os.makedirs(self.abs_path) if not os.path.exists(self.abs_path)
+        os.makedirs(self.abs_path) if not os.path.exists(self.abs_path) else None
         self.fp = open(self.abs_path + 'res-list.json', "wb")
         self.exporter = JsonItemExporter(self.fp, encoding='utf-8')
         self.exporter.start_exporting()
@@ -99,6 +98,19 @@ class ResourceOutputPipeline:
         fp.write(message % (adapter['body']))
         fp.close()
         return item
+
+
+# 其他文件导出管道
+class SourceFilePipeline(FilesPipeline):
+    abs_path = ABS_PATH
+
+    def get_media_requests(self, item, info):
+        adapter = ItemAdapter(item)
+        for url in adapter['resource_links']:
+            yield scrapy.Request(DOMAIN + url)
+
+    def file_path(self, request, response=None, info=None, *, item=None):
+        return self.abs_path + '/' + urlparse(request.url).path
 
 
 def local2utc(local_st):
