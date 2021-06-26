@@ -2,6 +2,7 @@
 
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 import os
+import re
 import time
 import datetime
 from urllib.parse import urlparse
@@ -12,7 +13,7 @@ from scrapy.pipelines.files import FilesPipeline
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.exporters import JsonItemExporter
 
-from crawling.constant_settings import ABS_PATH,DOMAIN
+from crawling.constant_settings import ABS_PATH, DOMAIN, DATE_TIME_PATTERN
 
 from items import JsonOutputsSingleItem
 
@@ -38,27 +39,6 @@ class MyImagesPipeline(ImagesPipeline):
 
     def file_path(self, request, response=None, info=None, *, item=None):
         return self.abs_path + urlparse(request.url).path
-
-
-# 文件夹创建管道
-class DirCreatingPipeline:
-    abs_path = ABS_PATH
-
-    def process_item(self, item, spider):
-        adapter = ItemAdapter(item)
-        if adapter.get('localtime') is not None:
-            # 转化成utc时间
-            adapter['localtime'] = local2utc(adapter['localtime'])
-        else:
-            adapter['localtime'] = local2utc(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-        self.mkdir(self.abs_path + adapter['localtime'] + '/resource')
-        return item
-
-    def mkdir(self, path):
-        if not os.path.exists(path):
-            os.makedirs(path)
-        else:
-            os.makedirs(self.abs_path + local2utc(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + '/resource')
 
 
 # json文件导出管道
@@ -93,7 +73,15 @@ class ResourceOutputPipeline:
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
-        fp = open(self.abs_path + adapter['localtime'] + '/resource/' + 'page' + '.html', "w"
+        if adapter.get('localtime') is not None and re.match(DATE_TIME_PATTERN, adapter.get('localtime')):
+            # 转化成utc时间
+            adapter['localtime'] = local2utc(adapter['localtime'])
+        else:
+            adapter['localtime'] = local2utc(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        path = self.abs_path + adapter['localtime'] + '/resource/'
+        if not os.path.exists(path):
+            os.makedirs(path)
+        fp = open(path + 'page' + '.html', "w"
                   , encoding='utf-8')
         fp.write(message % (adapter['body']))
         fp.close()
@@ -114,7 +102,7 @@ class SourceFilePipeline(FilesPipeline):
 
 
 def local2utc(local_st):
-    date, times = local_st.split(' ')[0], local_st.split(' ')[1]
+    date, times = local_st.split(' ')[0], local_st.split(' ')[1] if True else '00:00:00'
     year, month, day = int(date.split('-')[0]), int(date.split('-')[1]), int(date.split('-')[2])
     hour, minute, sec = int(times.split(':')[0]), int(times.split(':')[1]), int(times.split(':')[2])
     time_struct = time.mktime(datetime.datetime(year, month, day, hour, minute, sec, 0).timetuple())

@@ -62,7 +62,6 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'crawling.pipelines.DirCreatingPipeline': 100,
     'crawling.pipelines.MyImagesPipeline': 200,
     'crawling.pipelines.SourceFilePipeline': 201,
     'crawling.pipelines.JsonOutputPipeline': 300,
