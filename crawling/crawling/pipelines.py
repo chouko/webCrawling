@@ -73,14 +73,18 @@ class ResourceOutputPipeline:
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
-        if adapter.get('localtime') is not None and re.match(DATE_TIME_PATTERN, adapter.get('localtime')):
+        if item.get('localtime') is not None and re.match(DATE_TIME_PATTERN, item.get('localtime')):
             # 转化成utc时间
-            adapter['localtime'] = local2utc(adapter['localtime'])
+            item['localtime'] = local2utc(item['localtime'])
         else:
-            adapter['localtime'] = local2utc(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-        path = self.abs_path + adapter['localtime'] + '/resource/'
-        if not os.path.exists(path):
-            os.makedirs(path)
+            item['localtime'] = local2utc(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        path = self.abs_path + item['localtime'] + '/resource/'
+        if os.path.exists(path):
+            time.sleep(1)
+            item['localtime'] = local2utc(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        path = self.abs_path + item['localtime'] + '/resource/'
+
+        os.makedirs(path)
         fp = open(path + 'page' + '.html', "w"
                   , encoding='utf-8')
         fp.write(message % (adapter['body']))

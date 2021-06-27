@@ -35,7 +35,8 @@ class NewsSpider(Spider):
                                                                    "'lines-limit-length')]/text()").get()),
                               errback=self.errback)
 
-            if int(next_link.split('=')[-1]) < int(final_link.split('=')[-1]):
+            # if int(next_link.split('=')[-1]) < int(final_link.split('=')[-1]):
+            if int(next_link.split('=')[-1]) < 5:
                 yield Request(DOMAIN + next_link, callback=self.parse, errback=self.errback)
         except IndexError:
             pass
@@ -51,7 +52,8 @@ class NewsSpider(Spider):
         item['localtime'] = selector.xpath("//div[contains(@class, 'article_time')]/span/text()").get()
         item['image_urls'] = set([img for img in icons_images if re.match(r'^[^(http)]', img)])
         item['category'] = 'PRODUCT' if True in [word in item['title'] for word in KEY_WORD] else 'NEWS'
-        item['summary'] = summary
+        text_list = selector.xpath("string(//div[contains(@class, 'article_body_context')])").get()
+        item['summary'] = text_list[:100]
         item['resource_links'] = set([link for link in (selector.xpath("//link/@href | //script/@src").getall())
                                       if re.match(r'^[^(http)]', link)])
         yield item

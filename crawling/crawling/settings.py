@@ -64,7 +64,7 @@ ROBOTSTXT_OBEY = True
 ITEM_PIPELINES = {
     'crawling.pipelines.MyImagesPipeline': 200,
     'crawling.pipelines.SourceFilePipeline': 201,
-    'crawling.pipelines.JsonOutputPipeline': 300,
+    'crawling.pipelines.JsonOutputPipeline': 401,
     'crawling.pipelines.ResourceOutputPipeline': 400
 }
 

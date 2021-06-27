@@ -7,7 +7,7 @@ HOST = 'www.zjgj.ca'
 DETAIL_PATTERN = ".//div[contains(@class,'media item')]/a"
 NEXT_PAGE_XPATH = "//ul[contains(@class,'pagingArea')]/li/a[3]/@href"
 FINAL_PAGE_XPATH = "//ul[contains(@class,'pagingArea')]/li/a[4]/@href"
-ABS_PATH = dirname(dirname(abspath(__file__))) + '/news/'
+ABS_PATH = dirname(dirname(abspath(__file__))) + '/news2/'
 HEAD = '<head>' \
        '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">' \
        '<title>加拿大中部省份公立中学教育局-中加国际</title>' \
