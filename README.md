@@ -21,4 +21,4 @@
 2. scrapy————抓取文章详细内容
 3. 其它
 - selenium == 3.14.0，需要安装浏览器驱动
-- 本项目使用了Chrome驱动，下载地址👉https://chromedriver.storage.googleapis.com/index.html
+- 本项目使用了Chrome驱动，下载地址👉https://chromedriver.storage.googleapis.com/index.html?path=91.0.4472.101/
