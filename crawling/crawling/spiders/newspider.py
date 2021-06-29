@@ -35,8 +35,8 @@ class NewsSpider(Spider):
                                                                    "'lines-limit-length')]/text()").get()),
                               errback=self.errback)
 
-            # if int(next_link.split('=')[-1]) < int(final_link.split('=')[-1]):
-            if int(next_link.split('=')[-1]) < 5:
+            if int(next_link.split('=')[-1]) < int(final_link.split('=')[-1]):
+                # if int(next_link.split('=')[-1]) < 5:
                 yield Request(DOMAIN + next_link, callback=self.parse, errback=self.errback)
         except IndexError:
             pass
