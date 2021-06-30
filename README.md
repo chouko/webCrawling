@@ -16,7 +16,7 @@
 1. 本地下载
 2. pip3 freeze > requirements.txt重新生成一下
 
-❀微信公众号文章爬取
+# 微信公众号文章爬取
 1. selenium————抓取公众号文章列表
 2. scrapy————抓取文章详细内容
 3. 其它
