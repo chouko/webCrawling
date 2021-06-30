@@ -1,4 +1,4 @@
-from articlelist.listsearch import ListSearch
+from scrapy import cmdline
 
 if __name__ == '__main__':
-    ListSearch().fetch_list()
+    cmdline.execute("scrapy crawl wechat_list".split())

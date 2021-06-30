@@ -1,12 +1,13 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
-
-import scrapy
+from scrapy import Item, Field
 
 
-class WechatItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class WechatListItem(Item):
+    app_msg_list = Field()
+
+
+class WechatDetailItem(Item):
+    path = Field()
+    title = Field()
+    category = Field()
+    tag = Field()
+    summary = Field()

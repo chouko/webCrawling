@@ -11,8 +11,9 @@ import scrapy
 from itemadapter import ItemAdapter
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.pipelines.images import ImagesPipeline
-from scrapy.exporters import JsonItemExporter
 
+from common import setting
+from common.pipelines import base_pipelines
 from crawling.constant_settings import ABS_PATH, DOMAIN, DATE_TIME_PATTERN
 
 from items import JsonOutputsSingleItem
@@ -42,14 +43,8 @@ class MyImagesPipeline(ImagesPipeline):
 
 
 # json文件导出管道
-class JsonOutputPipeline:
-
-    def __init__(self):
-        self.abs_path = ABS_PATH
-        os.makedirs(self.abs_path) if not os.path.exists(self.abs_path) else None
-        self.fp = open(self.abs_path + 'res-list.json', "wb")
-        self.exporter = JsonItemExporter(self.fp, encoding='utf-8')
-        self.exporter.start_exporting()
+class JsonOutputPipeline(base_pipelines.JsonBasePipeline):
+    file_name = '/res-list'
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
@@ -61,10 +56,6 @@ class JsonOutputPipeline:
         new_item['summary'] = adapter['summary']
         self.exporter.export_item(new_item)
         return item
-
-    def close_spider(self, spider):
-        self.exporter.finish_exporting()
-        self.fp.close()
 
 
 # html文件导出管道
