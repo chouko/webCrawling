@@ -17,7 +17,7 @@ class ListSpider(Spider):
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
         self.__search = listsearch.ListSearch()
-        self.__index = 325
+        self.__index = 930
 
     def start_requests(self):
         while True:
