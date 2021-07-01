@@ -33,8 +33,6 @@ class ListSearch:
             print("频繁了, 开始sleep………………")
             time.sleep(7200)
             print("重新开爬………………")
-            return None
         if len(obj['app_msg_list']) == 0:
             print("爬完了")
-            return None
         return ListSearch.__driver.page_source

@@ -9,4 +9,4 @@ from common.pipelines import base_pipelines
 
 
 class WechatPipeline(base_pipelines.JsonBasePipeline):
-    file_name = '/' + time.strftime("%Y%m%d%H%M%S", time.localtime())
+    file_name = '/list-res/' + time.strftime("%Y%m%d%H%M%S", time.localtime())
