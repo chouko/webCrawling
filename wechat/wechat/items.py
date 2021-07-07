@@ -6,8 +6,5 @@ class WechatListItem(Item):
 
 
 class WechatDetailItem(Item):
-    path = Field()
-    title = Field()
-    category = Field()
-    tag = Field()
-    summary = Field()
+    html = Field()
+    timestamp = Field()

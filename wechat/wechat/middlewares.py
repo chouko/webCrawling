@@ -1,7 +1,6 @@
 from scrapy import signals
 from scrapy.exceptions import CloseSpider
 
-
 from scrapy.http import HtmlResponse
 
 from articlelist import listsearch
@@ -63,11 +62,12 @@ class WechatDownloaderMiddleware:
         return s
 
     def process_request(self, request, spider):
-        body = listsearch.ListSearch.fetch_list(request.url)
-        if body is None:
-            raise CloseSpider('无法获取文章列表了。')
-
-        return HtmlResponse(url=request.url, request=request, body=body, status=200, encoding='utf-8')
+        if hasattr(spider, 'allowed_domains') and getattr(spider, 'allowed_domains') == ['mp.weixin.qq.com/']:
+            body = listsearch.ListSearch.fetch_list(request.url)
+            if body is None:
+                raise CloseSpider('无法获取文章列表了。')
+            return HtmlResponse(url=request.url, request=request, body=body, status=200, encoding='utf-8')
+        return None
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.

@@ -16,12 +16,12 @@ class ListSpider(Spider):
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        self.__search = listsearch.ListSearch()
         self.__index = 1250
 
     def start_requests(self):
+        search = listsearch.ListSearch()
         while True:
-            yield Request(WHCHAT_LIST_FORMAT.format(self.__index, self.__search.params["token"][0]))
+            yield Request(WHCHAT_LIST_FORMAT.format(self.__index, search.params["token"][0]))
             time.sleep(randint(3, 5))
             self.__index += 5
 
