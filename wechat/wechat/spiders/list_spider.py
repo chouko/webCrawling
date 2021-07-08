@@ -6,7 +6,8 @@ from scrapy import Spider, Request, Selector
 from scrapy.exceptions import CloseSpider
 
 from setting import WHCHAT_LIST_FORMAT
-from articlelist import listsearch
+
+from common.listsearch import ListSearch
 from wechat import items
 
 
@@ -19,7 +20,7 @@ class ListSpider(Spider):
         self.__index = 1250
 
     def start_requests(self):
-        search = listsearch.ListSearch()
+        search = ListSearch()
         while True:
             yield Request(WHCHAT_LIST_FORMAT.format(self.__index, search.params["token"][0]))
             time.sleep(randint(3, 5))
