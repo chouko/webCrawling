@@ -18,10 +18,3 @@ class CrawlingItem(Item):
     summary = Field()
     resource_links = Field()
 
-
-class JsonOutputsSingleItem(Item):
-    path = Field()
-    title = Field()
-    category = Field()
-    tag = Field()
-    summary = Field()

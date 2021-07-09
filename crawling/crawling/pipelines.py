@@ -12,11 +12,11 @@ from itemadapter import ItemAdapter
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.pipelines.images import ImagesPipeline
 
+from common.items import JsonOutputsSingleItem
 from common.pipelines import base_pipelines
 from crawling.constant_settings import ABS_PATH, DOMAIN
 
 from common.setting import DATE_TIME_PATTERN
-from items import JsonOutputsSingleItem
 
 message = """
 <html>
