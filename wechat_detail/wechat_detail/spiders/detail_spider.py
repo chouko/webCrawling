@@ -46,9 +46,8 @@ class WechatDetailSpider(Spider):
         return res
 
     def change_src_path(self, soup):
-        imgs = soup.find_all("img")
         original_urls = []
-        for img in imgs:
+        for img in soup.find_all("img"):
             if "data-src" in img.attrs:
                 original_url = img.attrs["data-src"]
                 del img.attrs["data-src"]
