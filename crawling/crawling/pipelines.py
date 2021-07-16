@@ -16,6 +16,7 @@ from common.items import JsonOutputsSingleItem
 from common.pipelines import base_pipelines
 from crawling.constant_settings import ABS_PATH, DOMAIN
 
+from common.pipelines.base_pipelines import ImageBasePipeline
 from common.setting import DATE_TIME_PATTERN
 
 message = """
@@ -30,16 +31,8 @@ message = """
 
 # 执行顺序参考settings.ITEM_PIPELINES
 # 详细页面的图像获取管道
-class MyImagesPipeline(ImagesPipeline):
+class MyImagesPipeline(ImageBasePipeline):
     abs_path = ABS_PATH
-
-    def get_media_requests(self, item, info):
-        adapter = ItemAdapter(item)
-        for image_url in adapter['image_urls']:
-            yield scrapy.Request(DOMAIN + image_url)
-
-    def file_path(self, request, response=None, info=None, *, item=None):
-        return self.abs_path + urlparse(request.url).path
 
 
 # json文件导出管道

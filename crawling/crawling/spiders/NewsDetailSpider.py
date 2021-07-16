@@ -2,7 +2,7 @@ import re
 
 from scrapy import Spider, Selector
 
-from crawling.constant_settings import HTML, HEAD, BODY, KEY_WORD
+from crawling.constant_settings import HTML, HEAD, BODY, KEY_WORD, DOMAIN
 from crawling.items import CrawlingItem
 
 
@@ -21,7 +21,7 @@ class DetailSpider(Spider):
         item['body'] = HTML % (HEAD, (BODY % body.get()))
         item['title'] = selector.xpath("//div[contains(@class, 'article_title')]/h1[1]/text()").get()
         item['localtime'] = selector.xpath("//div[contains(@class, 'article_time')]/span/text()").get()
-        item['image_urls'] = set([img for img in icons_images if re.match(r'^[^(http)]', img)])
+        item['image_urls'] = set([DOMAIN + img for img in icons_images if re.match(r'^[^(http)]', img)])
         item['category'] = 'PRODUCT' if True in [word in item['title'] for word in KEY_WORD] else 'NEWS'
         text_list = selector.xpath("//div[contains(@class, 'article_body_context')]/p/text()").getall()
         item['summary'] = ''

@@ -1,0 +1,18 @@
+# Define here the models for your scraped items
+#
+# See documentation in:
+# https://docs.scrapy.org/en/latest/topics/items.html
+
+import scrapy
+from scrapy import Item, Field
+
+
+class WechatDetailItem(Item):
+    html = Field()
+    timestamp = Field()
+    title = Field()
+    category = Field()
+    summary = Field()
+    resource_links = Field()
+    image_urls = Field()
+    images = Field()
