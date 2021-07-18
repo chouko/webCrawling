@@ -7,7 +7,7 @@ from itemadapter import ItemAdapter
 
 from common.items import JsonOutputsSingleItem
 from common.pipelines.base_pipelines import JsonBasePipeline, ImageBasePipeline
-from common.setting import ABS_PATH
+from common.setting import ABS_PATH, CATEGORY
 
 
 class WechatDetailHtmlOutputPipeline:
@@ -39,11 +39,13 @@ class JsonOutputPipeline(JsonBasePipeline):
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
+        tags = [CATEGORY.get(key) for key in CATEGORY.keys() if key in adapter["title"]]
+        tags.append("OTHER")
         new_item = JsonOutputsSingleItem()
         new_item['path'] = adapter['timestamp']
         new_item['title'] = adapter['title']
         new_item['category'] = adapter['category']
-        new_item['tag'] = ['OTHER']
+        new_item['tag'] = tags
         new_item['summary'] = adapter['summary']
         self.exporter.export_item(new_item)
         return item
